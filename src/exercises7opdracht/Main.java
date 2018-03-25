@@ -50,8 +50,17 @@ public class Main {
         System.out.println(l2.getVolgnr());
         System.out.println(a1.getVolgnr());
         
-        
-        
+        System.out.println("");
+        db.pubUitlenen(t1, l2);
+        db.pubInleveren(t1);
       
+        db.debugOutput();
+        System.out.println("");
+        db.pubUitlenen(t1, l1);
+        System.out.println("");
+        db.debugOutput();
+        
+        
+        System.out.println();
     }
 }
