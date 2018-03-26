@@ -44,8 +44,16 @@ public class Ontlening {
     public Calendar getVervaldatum() {
         return vervaldatum;
     }
+    
+    public String getVervaldatumStr(){
+        return vervaldatum.get(Calendar.DAY_OF_MONTH) + "/" + (vervaldatum.get(Calendar.MONTH)+1) + "/" + vervaldatum.get(Calendar.YEAR);
+    }
 
     public void setVervaldatum(Calendar vervaldatum) {
         this.vervaldatum = vervaldatum;
     }    
+    
+    public void verlengen(){
+        this.vervaldatum.add(Calendar.DAY_OF_MONTH, 21);
+    }
 }

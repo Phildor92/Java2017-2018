@@ -17,6 +17,7 @@ public class Main {
      */
     public static void main(String[] args) {
         Persoon.setStartVolgnr(3000);
+        Publicatie.setStartPubNr(400);
         
         Auteur a1 = new Auteur("Martin Book", 21451);
         db.opslaan(a1);
@@ -30,13 +31,16 @@ public class Main {
         Lezer l2 = new Lezer("David Dreyfus", 1356);
         db.opslaan(l2);
         
-        Boek b1 = new Boek("Hier en Daar", 102);
+        Boek b1 = new Boek("Hier en Daar", 97834107);
         db.opslaan(b1);
         
-        Boek b2 = new Boek("Tijd", 154);
+        Boek b2 = new Boek("Tijd", 97831102);
         db.opslaan(b2);
         
-        Tijdschrift t1 = new Tijdschrift("Science", 879);
+        Boek b3 = new Boek("Running", 97831109);
+        db.opslaan(b3);
+        
+        Tijdschrift t1 = new Tijdschrift("Science", 2);
         db.opslaan(t1);
         
         Ontlening o1 = new Ontlening(l1,b1);
@@ -45,22 +49,13 @@ public class Main {
         Ontlening o2 = new Ontlening(l2,t1);
         db.opslaan(o2);
         
+        Ontlening o3 = new Ontlening(l1,b3);
+        db.opslaan(o3);
+        
         db.debugOutput();
         System.out.println("");
-        System.out.println(l2.getVolgnr());
-        System.out.println(a1.getVolgnr());
-        
+        db.ontleningBewerken(b1, l2, true);
         System.out.println("");
-        db.pubUitlenen(t1, l2);
-        db.pubInleveren(t1);
-      
-        db.debugOutput();
-        System.out.println("");
-        db.pubUitlenen(t1, l1);
-        System.out.println("");
-        db.debugOutput();
-        
-        
-        System.out.println();
+        db.overzichtUitgeleendePublicaties();
     }
 }

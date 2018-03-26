@@ -11,10 +11,14 @@ package exercises7opdracht;
  */
 public class Publicatie {
     private String titel;
+    private static int huidigePubNr;
     private int pubnr;
+    
     
     public Publicatie(String titel){
         this.titel = titel;
+        this.pubnr = huidigePubNr;
+        huidigePubNr++;
     }
 
     public String getTitel() {
@@ -33,5 +37,7 @@ public class Publicatie {
         this.pubnr = pubnr;
     }
     
-    
+    public static void setStartPubNr(int startNr){
+        huidigePubNr = startNr;
+    }
 }
