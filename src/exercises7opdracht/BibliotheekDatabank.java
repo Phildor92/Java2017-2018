@@ -15,13 +15,12 @@ import java.util.*;
  */
 public class BibliotheekDatabank {
 
-    List<Auteur> auteurLijst = new ArrayList<>();
-    List<Publicatie> publicaties = new ArrayList<>();
-    List<Lezer> lezerLijst = new ArrayList<>();
-    List<Ontlening> ontleningsLijst = new ArrayList<>();
+    private List<Auteur> auteurLijst = new ArrayList<>();
+    private List<Publicatie> publicaties = new ArrayList<>();
+    private List<Lezer> lezerLijst = new ArrayList<>();
+    private List<Ontlening> ontleningsLijst = new ArrayList<>();
 
     /**
-     * method to fill Auteur table
      *
      * @param aut
      */
@@ -30,7 +29,6 @@ public class BibliotheekDatabank {
     }
 
     /**
-     * method to fill Publicatie table (with Boek or Tijdschrift objects)
      *
      * @param pub
      */
@@ -39,7 +37,6 @@ public class BibliotheekDatabank {
     }
 
     /**
-     * method to fill Lezer table
      *
      * @param lez
      */
@@ -48,7 +45,7 @@ public class BibliotheekDatabank {
     }
 
     /**
-     * method to fill Ontlening table
+     * e
      *
      * @param ont
      */
@@ -57,7 +54,7 @@ public class BibliotheekDatabank {
     }
 
     /**
-     * temporary debug method to show contents of all tables
+     *
      */
     public void debugOutput() {
         System.out.println("Auteurs en licenties:");
@@ -112,7 +109,7 @@ public class BibliotheekDatabank {
                 toBeRemoved = (Lezer) l;
             }
         }
-        
+
         lezerLijst.remove(toBeRemoved);
     }
 
@@ -165,14 +162,19 @@ public class BibliotheekDatabank {
      * @param lezer
      * @return Ontlening
      */
-    public Ontlening getOntlening(Lezer lezer) {
+    public List<Ontlening> getOntlening(Lezer lezer) {
+        List<Ontlening> ontleningenVanLezer = new ArrayList<>();
         for (Ontlening o : ontleningsLijst) {
             if (o.getLezer().equals(lezer)) {
                 //is this correct?
-                return o;
+                ontleningenVanLezer.add(o);
             }
         }
-        return null;
+        if (!ontleningenVanLezer.isEmpty()) {
+            return ontleningenVanLezer;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -195,7 +197,7 @@ public class BibliotheekDatabank {
      */
     @Deprecated
     public void removeOntlening(Lezer lezer) {
-        
+
         for (Ontlening o : ontleningsLijst) {
             if (o.getLezer().equals(lezer)) {
                 ontleningsLijst.remove(o);
@@ -220,8 +222,6 @@ public class BibliotheekDatabank {
     }
 
     /**
-     * Should be fine as long as no two Publicaties have the same title. Could
-     * be replaced by list? TODO replace
      *
      * @param titel
      * @return Publicatie
@@ -341,14 +341,13 @@ public class BibliotheekDatabank {
     }
 
     /**
-     * TODO add ontlening with due date (and automatic saldo calculation) or add
-     * manual saldo increment
      *
      * @param pub
      * @param lezer
      */
     public void pubUitlenen(Publicatie pub, Lezer lezer) {
-        if (this.getOntlening(pub) == null) {
+        try{
+            if (this.getOntlening(pub) == null) {
             if (lezer.getSaldo() < 5) {
                 ontleningsLijst.add(new Ontlening(lezer, pub));
                 System.out.println("Publicatie " + pub.getTitel() + " succesvol uitgeleend door " + lezer.getNaam());
@@ -358,15 +357,20 @@ public class BibliotheekDatabank {
         } else {
             System.out.println("Deze publicatie is al reeds uitgeleend");
         }
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        
 
     }
 
     /**
-     * 
-     * @param pub 
+     *
+     * @param pub
      */
     public void pubInleveren(Publicatie pub) {
-        if (this.getOntlening(pub) != null) {
+        try{
+            if (this.getOntlening(pub) != null) {
             Ontlening o = this.getOntlening(pub);
             if (o.getVervaldatum().compareTo(Calendar.getInstance()) < 0) {
                 Lezer lNew = o.getLezer();
@@ -379,6 +383,108 @@ public class BibliotheekDatabank {
             this.removeOntlening(pub);
         } else {
             System.out.println("Deze publicatie is niet ontleend");
+        }
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        
+
+    }
+
+    /**
+     *
+     */
+    public void overzichtPublicaties() {
+        for (Publicatie p : publicaties) {
+            System.out.print("Titel: " + p.getTitel() + " - PubNr: " + p.getPubnr());
+            if (p.getClass() == (new Boek("", 0)).getClass()) {
+                System.out.println(" - ISBN: " + ((Boek) p).getIsbn());
+            } else {
+                System.out.println(" - Frequentie: " + ((Tijdschrift) p).getFrequentie());
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    public void overzichtLezers() {
+        for (Lezer l : lezerLijst) {
+            System.out.println("Naam: " + l.getNaam() + " - VolgNr: " + l.getVolgnr() + " - Saldo: " + l.getSaldo() + " - LidNr: " + l.getLidnr());
+        }
+    }
+
+    /**
+     *
+     */
+    public void overzichtUitgeleendePublicaties() {
+        for (Ontlening o : ontleningsLijst) {
+            System.out.println("Titel: " + o.getPublicatie().getTitel() + " - Uitlener: " + o.getLezer().getNaam() + " - Uitgeleend tot: " + o.getVervaldatumStr());
+        }
+    }
+
+    /**
+     *
+     */
+    public void overzichtPublicatiesOverdatum() {
+        for (Ontlening o : ontleningsLijst) {
+            if (o.getVervaldatum().compareTo(Calendar.getInstance()) < 0) {
+                System.out.println("Titel: " + o.getPublicatie().getTitel() + " - Uitlener: " + o.getLezer().getNaam() + " - Uitgeleend tot: " + o.getVervaldatumStr());
+            }
+        }
+    }
+
+    /**
+     *
+     * @return int
+     */
+    public int aantalPublicatiesOverdatum() {
+        int aantal = 0;
+        for (Ontlening o : ontleningsLijst) {
+            if (o.getVervaldatum().compareTo(Calendar.getInstance()) < 0) {
+                aantal++;
+            }
+        }
+        return aantal;
+    }
+
+    /**
+     * Lijst van namen
+     */
+    public void overzichtLezersMetPublicatiesOverdatum() {
+        Set<Lezer> lezerSet = new HashSet<Lezer>();
+        for (Ontlening o : ontleningsLijst) {
+            if (o.getVervaldatum().compareTo(Calendar.getInstance()) < 0) {
+                lezerSet.add(o.getLezer());
+            }
+        }
+        for (Lezer l : lezerSet) {
+            System.out.println(l.getNaam());
+        }
+    }
+
+    /**
+     * alleen de eerste parameter is verplicht
+     *
+     * @param pub
+     * @param lez
+     * @param isVerlenging
+     */
+    public void ontleningBewerken(Publicatie pub, Lezer lez, boolean isVerlenging) {
+        try {
+            int positie = ontleningsLijst.indexOf(this.getOntlening(pub));
+            Ontlening editOnt = ontleningsLijst.get(positie);
+            ontleningsLijst.remove(positie);
+            if (lez != null) {
+                editOnt.setLezer(lez);
+            }
+            if (isVerlenging) {
+                editOnt.verlengen();
+            }
+
+            ontleningsLijst.add(positie, editOnt);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
 
     }
