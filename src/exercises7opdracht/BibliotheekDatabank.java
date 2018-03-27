@@ -155,8 +155,6 @@ public class BibliotheekDatabank {
     }
 
     /**
-     * TODO Should be modified to return a List<Ontlening> instead of a single
-     * Ontlening, as lezers may have multiple ontleningen
      *
      * @param lezer
      * @return Ontlening
@@ -191,7 +189,7 @@ public class BibliotheekDatabank {
     }
 
     /**
-     * @deprecated lezers may have multiple ontleningen
+     * @deprecated lezers kunnen meerdere publicaties uitlenen
      * @param lezer
      */
     @Deprecated
@@ -205,8 +203,7 @@ public class BibliotheekDatabank {
     }
 
     /**
-     * Should still be valid, as long as the boek and tijdschrift lists do not
-     * contain duplicates
+     * Dit kan alleen als publicaties uniek zijn
      *
      * @param pub
      */
@@ -249,7 +246,6 @@ public class BibliotheekDatabank {
     }
 
     /**
-     * Returns book based on isbn from Publicatie list
      *
      * @param isbn
      * @return Boek
@@ -340,7 +336,8 @@ public class BibliotheekDatabank {
     }
 
     /**
-     *
+     * Methode om publicatie uit te lenen. Als de publicatie al uitgeleend is, of als de saldo van de lezer te hoog is, zal de uitlening niet mogelijk zijn
+     * 
      * @param pub
      * @param lezer
      */
@@ -364,7 +361,8 @@ public class BibliotheekDatabank {
     }
 
     /**
-     *
+     * Methode om publicaties in te leveren. Als de leentermijn verstreken is, komt er daar een melding van. Ook als de publicatie niet uitgeleend is.
+     * 
      * @param pub
      */
     public void pubInleveren(Publicatie pub) {
@@ -391,7 +389,7 @@ public class BibliotheekDatabank {
     }
 
     /**
-     *
+     * Print een overzicht van alle publicaties
      */
     public void overzichtPublicaties() {
         for (Publicatie p : publicaties) {
@@ -405,7 +403,7 @@ public class BibliotheekDatabank {
     }
 
     /**
-     *
+     * Print een overzicht van alle lezers
      */
     public void overzichtLezers() {
         for (Lezer l : lezerLijst) {
@@ -414,7 +412,7 @@ public class BibliotheekDatabank {
     }
 
     /**
-     *
+     * Print een overzicht van alle uitgeleende publicaties
      */
     public void overzichtUitgeleendePublicaties() {
         for (Ontlening o : ontleningsLijst) {
@@ -423,7 +421,7 @@ public class BibliotheekDatabank {
     }
 
     /**
-     *
+     * Print een overzicht van publicaties waarvan de leentermijn verstreken is
      */
     public void overzichtPublicatiesOverdatum() {
         for (Ontlening o : ontleningsLijst) {
@@ -434,6 +432,7 @@ public class BibliotheekDatabank {
     }
 
     /**
+     * Geeft het aantal publicaties waarvan de leentermijn verstreken is als een int terug.
      *
      * @return int
      */
@@ -448,7 +447,7 @@ public class BibliotheekDatabank {
     }
 
     /**
-     * Lijst van namen
+     * Print een lijst van namen van lezers die een publicatie uit hebben geleend waarvan de leentermijn verstreken is.
      */
     public void overzichtLezersMetPublicatiesOverdatum() {
         Set<Lezer> lezerSet = new HashSet<Lezer>();
@@ -485,6 +484,21 @@ public class BibliotheekDatabank {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
 
+    /**
+     * TODO test
+     * TODO combine first two lines?
+     * @param lez
+     */
+    public void lezerBewerken(Lezer lez, Lezer newLez){
+        try {
+            int positie = lezerLijst.indexOf(lez);
+            Lezer editLezer = lezerLijst.get(positie);
+            lezerLijst.remove(positie);
+            lezerLijst.add(positie, editLezer);
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 }
