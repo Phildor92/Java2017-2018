@@ -38,6 +38,7 @@ public class Persoon {
 
     public  void setVolgnr(int volgnr) {
         this.volgnr = volgnr;
+        huidigeVolgNr--;
     }
     
     

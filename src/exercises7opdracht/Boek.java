@@ -13,9 +13,10 @@ public class Boek extends Publicatie {
     private int isbn;
     private int[] auteurs;
     
-    public Boek(String titel, int nr) {
+    public Boek(String titel, int nr, int[] auteurs) {
         super(titel);
         this.isbn = nr;
+        this.auteurs = auteurs;
     }
 
     public int getIsbn() {

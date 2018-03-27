@@ -25,19 +25,25 @@ public class Main {
         Auteur a2 = new Auteur("Tom Reid", 65874);
         db.opslaan(a2);
         
+        Auteur a3 = new Auteur("Mattias Symynck", 23457);
+        db.opslaan(a3);
+        
+        Auteur a4 = new Auteur("Jane Trebil", 89745);
+        db.opslaan(a4);
+        
         Lezer l1 = new Lezer("Richard Pollack", 1245);
         db.opslaan(l1);
         
         Lezer l2 = new Lezer("David Dreyfus", 1356);
         db.opslaan(l2);
         
-        Boek b1 = new Boek("Hier en Daar", 97834107);
+        Boek b1 = new Boek("Hier en Daar", 97834107, new int[]{a1.getVolgnr(), a2.getVolgnr()});
         db.opslaan(b1);
         
-        Boek b2 = new Boek("Tijd", 97831102);
+        Boek b2 = new Boek("Tijd", 97831102, new int[]{a3.getVolgnr(), a4.getVolgnr()});
         db.opslaan(b2);
         
-        Boek b3 = new Boek("Running", 97831109);
+        Boek b3 = new Boek("Running", 97831109, new int[]{a1.getVolgnr()});
         db.opslaan(b3);
         
         Tijdschrift t1 = new Tijdschrift("Science", 2);
@@ -57,5 +63,14 @@ public class Main {
         db.ontleningBewerken(b1, l2, true);
         System.out.println("");
         db.overzichtUitgeleendePublicaties();
+        System.out.println("");
+        
+        db.lezerBewerken(l2, new Lezer("Merin Tell",12325));
+        Lezer l3 = new Lezer("Test test", 12235234);
+        db.opslaan(l3);
+        System.out.println("");
+        db.debugOutput();
+        
+        
     }
 }

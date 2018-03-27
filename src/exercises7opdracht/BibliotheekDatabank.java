@@ -62,8 +62,8 @@ public class BibliotheekDatabank {
         System.out.println("Publicaties:");
         publicaties.forEach((p) -> System.out.println(p.toString()));
         System.out.println("");
-        System.out.println("Lezers + lidnr + saldo:");
-        lezerLijst.forEach((l) -> System.out.println(l.getNaam() + " - lidnr: " + l.getLidnr() + " - saldo:" + l.getSaldo()));
+        System.out.println("Lezers + lidnr + saldo + volgnr:");
+        lezerLijst.forEach((l) -> System.out.println(l.getNaam() + " - lidnr: " + l.getLidnr() + " - saldo:" + l.getSaldo() + " - volgnr: " + l.getVolgnr()));
         System.out.println("");
         System.out.println("Ontleners en publicaties:");
         ontleningsLijst.forEach((o) -> System.out.println(o.getLezer().getNaam() + " - titel: " + o.getPublicatie().getTitel()));
@@ -120,6 +120,15 @@ public class BibliotheekDatabank {
     public Auteur getAuteurByLicentie(int licentie) {
         for (Auteur a : auteurLijst) {
             if (a.getLicentie() == licentie) {
+                return a;
+            }
+        }
+        return null;
+    }
+    
+    public Auteur getAuteurByVolgNr(int volgnr){
+        for(Auteur a: auteurLijst){
+            if(a.getVolgnr() == volgnr){
                 return a;
             }
         }
@@ -394,7 +403,7 @@ public class BibliotheekDatabank {
     public void overzichtPublicaties() {
         for (Publicatie p : publicaties) {
             System.out.print("Titel: " + p.getTitel() + " - PubNr: " + p.getPubnr());
-            if (p.getClass() == (new Boek("", 0)).getClass()) {
+            if (p.getClass() == (new Boek("", 0, new int[]{})).getClass()) {
                 System.out.println(" - ISBN: " + ((Boek) p).getIsbn());
             } else {
                 System.out.println(" - Frequentie: " + ((Tijdschrift) p).getFrequentie());
@@ -487,17 +496,61 @@ public class BibliotheekDatabank {
     }
 
     /**
-     * TODO test
-     * TODO combine first two lines?
      * @param lez
+     * @param newLez
      */
     public void lezerBewerken(Lezer lez, Lezer newLez){
         try {
+            
             int positie = lezerLijst.indexOf(lez);
-            Lezer editLezer = lezerLijst.get(positie);
+            Lezer oldLezer = lezerLijst.get(positie);
+            newLez.setVolgnr(oldLezer.getVolgnr());
             lezerLijst.remove(positie);
-            lezerLijst.add(positie, editLezer);
+            lezerLijst.add(positie, newLez);
+            List<Ontlening> OntleningenVanLezer = this.getOntlening(lez);
+            for(Ontlening o : OntleningenVanLezer){
+                o.setLezer(newLez);
+            }
         } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    /**
+     * Vind de auteurs van een boek, en geeft een array van Auteur objecten terug
+     * @param b
+     * @return Auteur[]
+     */
+    public Auteur[] vindAuteurs(Boek b){
+        try{
+            int lengte = ((Boek) publicaties.get(this.publicaties.indexOf((Publicatie)b))).getAuteurs().length;
+            Auteur[] auteurs = new Auteur[lengte];
+            int[] auteursAlsInt = ((Boek) publicaties.get(this.publicaties.indexOf((Publicatie)b))).getAuteurs();
+            for(int i = 0; i<lengte;i++){
+                auteurs[i] = this.getAuteurByVolgNr(auteursAlsInt[i]);
+            }
+            return auteurs;
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+    
+    /**
+     * Print een overzicht van boeken met daarbij vermeld de auteurs
+     */
+    public void printAuteursPerBoek(){
+        try{
+            for(Publicatie p : publicaties)
+                if(p.getClass().equals(Boek.class)){
+                    Boek b = (Boek) p;
+                    System.out.print("Titel: "+ b.getTitel() + " - Auteurs: " + this.getAuteurByVolgNr(b.getAuteurs()[0]).getNaam());
+                    for(int i = 1; i<b.getAuteurs().length;i++){
+                        System.out.print(" - " + this.getAuteurByVolgNr(b.getAuteurs()[i]).getNaam());
+                    }
+                    System.out.println("");
+                }
+        } catch(Exception e){
             System.out.println(e.getMessage());
         }
     }
