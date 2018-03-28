@@ -16,16 +16,28 @@ import java.util.*;
 public class BibliotheekDatabank {
 
     private List<Auteur> auteurLijst = new ArrayList<>();
-    private List<Publicatie> publicaties = new ArrayList<>();
+    private List<Publicatie> publicatieLijst = new ArrayList<>();
     private List<Lezer> lezerLijst = new ArrayList<>();
-    private List<Ontlening> ontleningsLijst = new ArrayList<>();
+    private List<Ontlening> ontleningLijst = new ArrayList<>();
 
     /**
      *
      * @param aut
      */
     public void opslaan(Auteur aut) {
-        auteurLijst.add(aut);
+        try {
+            Auteur tempAut = this.getAuteurByVolgNr(aut.getVolgnr());
+            if (tempAut != null) {
+                if (aut.getVolgnr() != tempAut.getVolgnr()) {
+                    auteurLijst.add(aut);
+                }
+            } else {
+                auteurLijst.add(aut);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage() + "something went wrong");
+        }
+
     }
 
     /**
@@ -33,7 +45,24 @@ public class BibliotheekDatabank {
      * @param pub
      */
     public void opslaan(Publicatie pub) {
-        publicaties.add(pub);
+        try {
+            if (pub.getClass().equals(Boek.class)) {
+                Boek newBoek = (Boek) pub;
+                Boek tempBoek = this.getBoek(newBoek.getIsbn());
+                if (tempBoek != null) {
+                    if (newBoek.getIsbn() != tempBoek.getIsbn()) {
+                        publicatieLijst.add(pub);
+                    }
+                } else {
+                    publicatieLijst.add(pub);
+                }
+            } else {
+                publicatieLijst.add(pub);
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage() + "something went wrong");
+        }
     }
 
     /**
@@ -41,7 +70,18 @@ public class BibliotheekDatabank {
      * @param lez
      */
     public void opslaan(Lezer lez) {
-        lezerLijst.add(lez);
+        try {
+            Lezer tempLez = this.getLezerByVolgNr(lez.getVolgnr());
+            if (tempLez != null) {
+                if (lez.getVolgnr() != tempLez.getVolgnr()) {
+                    lezerLijst.add(lez);
+                }
+            } else {
+                lezerLijst.add(lez);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage() + "something went wrong");
+        }
     }
 
     /**
@@ -49,7 +89,7 @@ public class BibliotheekDatabank {
      * @param ont
      */
     public void opslaan(Ontlening ont) {
-        ontleningsLijst.add(ont);
+        ontleningLijst.add(ont);
     }
 
     /**
@@ -60,23 +100,37 @@ public class BibliotheekDatabank {
         auteurLijst.forEach((a) -> System.out.println(a.getNaam() + " - " + a.getLicentie()));
         System.out.println("");
         System.out.println("Publicaties:");
-        publicaties.forEach((p) -> System.out.println(p.toString()));
+        publicatieLijst.forEach((p) -> System.out.println(p.toString()));
         System.out.println("");
         System.out.println("Lezers + lidnr + saldo + volgnr:");
         lezerLijst.forEach((l) -> System.out.println(l.getNaam() + " - lidnr: " + l.getLidnr() + " - saldo:" + l.getSaldo() + " - volgnr: " + l.getVolgnr()));
         System.out.println("");
         System.out.println("Ontleners en publicaties:");
-        ontleningsLijst.forEach((o) -> System.out.println(o.getLezer().getNaam() + " - titel: " + o.getPublicatie().getTitel()));
+        ontleningLijst.forEach((o) -> System.out.println(o.getLezer().getNaam() + " - titel: " + o.getPublicatie().getTitel()));
     }
 
     /**
      *
-     * @param nr
+     * @param lidNr
      * @return Lezer
      */
-    public Lezer getLezerByLidNr(int nr) {
+    public Lezer getLezerByLidNr(int lidNr) {
         for (Lezer l : lezerLijst) {
-            if (l.getLidnr() == nr) {
+            if (l.getLidnr() == lidNr) {
+                return l;
+            }
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @param volgNr
+     * @return Lezer
+     */
+    public Lezer getLezerByVolgNr(int volgNr) {
+        for (Lezer l : lezerLijst) {
+            if (l.getVolgnr() == volgNr) {
                 return l;
             }
         }
@@ -125,10 +179,10 @@ public class BibliotheekDatabank {
         }
         return null;
     }
-    
-    public Auteur getAuteurByVolgNr(int volgnr){
-        for(Auteur a: auteurLijst){
-            if(a.getVolgnr() == volgnr){
+
+    public Auteur getAuteurByVolgNr(int volgnr) {
+        for (Auteur a : auteurLijst) {
+            if (a.getVolgnr() == volgnr) {
                 return a;
             }
         }
@@ -170,7 +224,7 @@ public class BibliotheekDatabank {
      */
     public List<Ontlening> getOntlening(Lezer lezer) {
         List<Ontlening> ontleningenVanLezer = new ArrayList<>();
-        for (Ontlening o : ontleningsLijst) {
+        for (Ontlening o : ontleningLijst) {
             if (o.getLezer().equals(lezer)) {
                 //is this correct?
                 ontleningenVanLezer.add(o);
@@ -189,7 +243,7 @@ public class BibliotheekDatabank {
      * @return Ontlening
      */
     public Ontlening getOntlening(Publicatie pub) {
-        for (Ontlening o : ontleningsLijst) {
+        for (Ontlening o : ontleningLijst) {
             if (o.getPublicatie().equals(pub)) {
                 return o;
             }
@@ -204,9 +258,9 @@ public class BibliotheekDatabank {
     @Deprecated
     public void removeOntlening(Lezer lezer) {
 
-        for (Ontlening o : ontleningsLijst) {
+        for (Ontlening o : ontleningLijst) {
             if (o.getLezer().equals(lezer)) {
-                ontleningsLijst.remove(o);
+                ontleningLijst.remove(o);
             }
         }
     }
@@ -218,12 +272,12 @@ public class BibliotheekDatabank {
      */
     public void removeOntlening(Publicatie pub) {
         Ontlening toBeRemoved = null;
-        for (Ontlening o : ontleningsLijst) {
+        for (Ontlening o : ontleningLijst) {
             if (o.getPublicatie().equals(pub)) {
                 toBeRemoved = o;
             }
         }
-        ontleningsLijst.remove(toBeRemoved);
+        ontleningLijst.remove(toBeRemoved);
     }
 
     /**
@@ -231,8 +285,8 @@ public class BibliotheekDatabank {
      * @param titel
      * @return Publicatie
      */
-    public Publicatie getPublicatieByTitel(String titel) {
-        for (Publicatie p : publicaties) {
+    public Publicatie getPublicatie(String titel) {
+        for (Publicatie p : publicatieLijst) {
             if (p.getTitel().equals(titel)) {
                 return p;
             }
@@ -245,8 +299,8 @@ public class BibliotheekDatabank {
      * @param pubnr
      * @return Publicatie
      */
-    public Publicatie getPublicatieByPubNr(int pubnr) {
-        for (Publicatie p : publicaties) {
+    public Publicatie getPublicatie(int pubnr) {
+        for (Publicatie p : publicatieLijst) {
             if (p.getPubnr() == pubnr) {
                 return p;
             }
@@ -259,8 +313,8 @@ public class BibliotheekDatabank {
      * @param isbn
      * @return Boek
      */
-    public Publicatie getBoekByIsbn(int isbn) {
-        for (Publicatie p : publicaties) {
+    public Boek getBoek(int isbn) {
+        for (Publicatie p : publicatieLijst) {
             Boek b = (Boek) p;
             if (b.getIsbn() == isbn) {
                 return b;
@@ -273,43 +327,43 @@ public class BibliotheekDatabank {
      *
      * @param titel
      */
-    public void removePublicatieByTitel(String titel) {
+    public void removePublicatie(String titel) {
         Publicatie toBeRemoved = null;
-        for (Publicatie p : publicaties) {
+        for (Publicatie p : publicatieLijst) {
             if (p.getTitel().equals(titel)) {
                 toBeRemoved = p;
             }
         }
-        publicaties.remove(toBeRemoved);
+        publicatieLijst.remove(toBeRemoved);
     }
 
     /**
      *
      * @param pubnr
      */
-    public void removePublicatieByPubnr(int pubnr) {
+    public void removePublicatie(int pubnr) {
         Publicatie toBeRemoved = null;
-        for (Publicatie p : publicaties) {
+        for (Publicatie p : publicatieLijst) {
             if (p.getPubnr() == pubnr) {
                 toBeRemoved = p;
             }
         }
-        publicaties.remove(toBeRemoved);
+        publicatieLijst.remove(toBeRemoved);
     }
 
     /**
      *
      * @param isbn
      */
-    public void removeBoekByIsbn(int isbn) {
+    public void removeBoek(int isbn) {
         Publicatie toBeRemoved = null;
-        for (Publicatie p : publicaties) {
+        for (Publicatie p : publicatieLijst) {
             Boek b = (Boek) p;
             if (b.getIsbn() == isbn) {
                 toBeRemoved = p;
             }
         }
-        publicaties.remove(toBeRemoved);
+        publicatieLijst.remove(toBeRemoved);
     }
 
     /**
@@ -333,7 +387,7 @@ public class BibliotheekDatabank {
      * @param ontlening
      */
     public void remove(Ontlening ontlening) {
-        ontleningsLijst.remove(ontlening);
+        ontleningLijst.remove(ontlening);
     }
 
     /**
@@ -341,67 +395,67 @@ public class BibliotheekDatabank {
      * @param publicatie
      */
     public void remove(Publicatie publicatie) {
-        publicaties.remove(publicatie);
+        publicatieLijst.remove(publicatie);
     }
 
     /**
-     * Methode om publicatie uit te lenen. Als de publicatie al uitgeleend is, of als de saldo van de lezer te hoog is, zal de uitlening niet mogelijk zijn
-     * 
+     * Methode om publicatie uit te lenen. Als de publicatie al uitgeleend is,
+     * of als de saldo van de lezer te hoog is, zal de uitlening niet mogelijk
+     * zijn
+     *
      * @param pub
      * @param lezer
      */
     public void pubUitlenen(Publicatie pub, Lezer lezer) {
-        try{
+        try {
             if (this.getOntlening(pub) == null) {
-            if (lezer.getSaldo() < 5) {
-                ontleningsLijst.add(new Ontlening(lezer, pub));
-                System.out.println("Publicatie " + pub.getTitel() + " succesvol uitgeleend door " + lezer.getNaam());
+                if (lezer.getSaldo() < 5) {
+                    ontleningLijst.add(new Ontlening(lezer, pub));
+                    System.out.println("Publicatie " + pub.getTitel() + " succesvol uitgeleend door " + lezer.getNaam());
+                } else {
+                    System.out.println("De saldo op deze rekening is te hoog (" + lezer.getSaldo() + "). De saldo moet betaald worden vooraleer deze lezer nog boeken uit kan lenen");
+                }
             } else {
-                System.out.println("De saldo op deze rekening is te hoog (" + lezer.getSaldo() + "). De saldo moet betaald worden vooraleer deze lezer nog boeken uit kan lenen");
+                System.out.println("Deze publicatie is al reeds uitgeleend");
             }
-        } else {
-            System.out.println("Deze publicatie is al reeds uitgeleend");
-        }
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        
 
     }
 
     /**
-     * Methode om publicaties in te leveren. Als de leentermijn verstreken is, komt er daar een melding van. Ook als de publicatie niet uitgeleend is.
-     * 
+     * Methode om publicaties in te leveren. Als de leentermijn verstreken is,
+     * komt er daar een melding van. Ook als de publicatie niet uitgeleend is.
+     *
      * @param pub
      */
     public void pubInleveren(Publicatie pub) {
-        try{
+        try {
             if (this.getOntlening(pub) != null) {
-            Ontlening o = this.getOntlening(pub);
-            if (o.getVervaldatum().compareTo(Calendar.getInstance()) < 0) {
-                Lezer lNew = o.getLezer();
-                int newSaldo = lNew.getSaldo();
-                lNew.setSaldo(newSaldo + 1);
-                lezerLijst.set(lezerLijst.indexOf(lNew), lNew);
-                System.out.println("Deze publicatie is te laat. Saldo wordt met 1 Euro verhoogd. Vanaf 5 Euro kunt u geen publicaties meer uitlenen. Huidige saldo is: " + lNew.getSaldo());
+                Ontlening o = this.getOntlening(pub);
+                if (o.getVervaldatum().compareTo(Calendar.getInstance()) < 0) {
+                    Lezer lNew = o.getLezer();
+                    int newSaldo = lNew.getSaldo();
+                    lNew.setSaldo(newSaldo + 1);
+                    lezerLijst.set(lezerLijst.indexOf(lNew), lNew);
+                    System.out.println("Deze publicatie is te laat. Saldo wordt met 1 Euro verhoogd. Vanaf 5 Euro kunt u geen publicaties meer uitlenen. Huidige saldo is: " + lNew.getSaldo());
+                }
+                System.out.println("Publicatie " + o.getPublicatie().getTitel() + " succesvol ingeleverd door " + o.getLezer().getNaam());
+                this.removeOntlening(pub);
+            } else {
+                System.out.println("Deze publicatie is niet ontleend");
             }
-            System.out.println("Publicatie " + o.getPublicatie().getTitel() + " succesvol ingeleverd door " + o.getLezer().getNaam());
-            this.removeOntlening(pub);
-        } else {
-            System.out.println("Deze publicatie is niet ontleend");
-        }
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        
-
     }
 
     /**
      * Print een overzicht van alle publicaties
      */
     public void overzichtPublicaties() {
-        for (Publicatie p : publicaties) {
+        for (Publicatie p : publicatieLijst) {
             System.out.print("Titel: " + p.getTitel() + " - PubNr: " + p.getPubnr());
             if (p.getClass() == (new Boek("", 0, new int[]{})).getClass()) {
                 System.out.println(" - ISBN: " + ((Boek) p).getIsbn());
@@ -424,7 +478,7 @@ public class BibliotheekDatabank {
      * Print een overzicht van alle uitgeleende publicaties
      */
     public void overzichtUitgeleendePublicaties() {
-        for (Ontlening o : ontleningsLijst) {
+        for (Ontlening o : ontleningLijst) {
             System.out.println("Titel: " + o.getPublicatie().getTitel() + " - Uitlener: " + o.getLezer().getNaam() + " - Uitgeleend tot: " + o.getVervaldatumStr());
         }
     }
@@ -433,7 +487,7 @@ public class BibliotheekDatabank {
      * Print een overzicht van publicaties waarvan de leentermijn verstreken is
      */
     public void overzichtPublicatiesOverdatum() {
-        for (Ontlening o : ontleningsLijst) {
+        for (Ontlening o : ontleningLijst) {
             if (o.getVervaldatum().compareTo(Calendar.getInstance()) < 0) {
                 System.out.println("Titel: " + o.getPublicatie().getTitel() + " - Uitlener: " + o.getLezer().getNaam() + " - Uitgeleend tot: " + o.getVervaldatumStr());
             }
@@ -441,13 +495,14 @@ public class BibliotheekDatabank {
     }
 
     /**
-     * Geeft het aantal publicaties waarvan de leentermijn verstreken is als een int terug.
+     * Geeft het aantal publicaties waarvan de leentermijn verstreken is als een
+     * int terug.
      *
      * @return int
      */
     public int aantalPublicatiesOverdatum() {
         int aantal = 0;
-        for (Ontlening o : ontleningsLijst) {
+        for (Ontlening o : ontleningLijst) {
             if (o.getVervaldatum().compareTo(Calendar.getInstance()) < 0) {
                 aantal++;
             }
@@ -456,11 +511,12 @@ public class BibliotheekDatabank {
     }
 
     /**
-     * Print een lijst van namen van lezers die een publicatie uit hebben geleend waarvan de leentermijn verstreken is.
+     * Print een lijst van namen van lezers die een publicatie uit hebben
+     * geleend waarvan de leentermijn verstreken is.
      */
     public void overzichtLezersMetPublicatiesOverdatum() {
         Set<Lezer> lezerSet = new HashSet<>();
-        for (Ontlening o : ontleningsLijst) {
+        for (Ontlening o : ontleningLijst) {
             if (o.getVervaldatum().compareTo(Calendar.getInstance()) < 0) {
                 lezerSet.add(o.getLezer());
             }
@@ -479,9 +535,9 @@ public class BibliotheekDatabank {
      */
     public void ontleningBewerken(Publicatie pub, Lezer lez, boolean isVerlenging) {
         try {
-            int positie = ontleningsLijst.indexOf(this.getOntlening(pub));
-            Ontlening editOnt = ontleningsLijst.get(positie);
-            ontleningsLijst.remove(positie);
+            int positie = ontleningLijst.indexOf(this.getOntlening(pub));
+            Ontlening editOnt = ontleningLijst.get(positie);
+            ontleningLijst.remove(positie);
             if (lez != null) {
                 editOnt.setLezer(lez);
             }
@@ -489,7 +545,7 @@ public class BibliotheekDatabank {
                 editOnt.verlengen();
             }
 
-            ontleningsLijst.add(positie, editOnt);
+            ontleningLijst.add(positie, editOnt);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -499,59 +555,92 @@ public class BibliotheekDatabank {
      * @param lez
      * @param newLez
      */
-    public void lezerBewerken(Lezer lez, Lezer newLez){
+    public void lezerBewerken(Lezer lez, Lezer newLez) {
         try {
-            
+            //achterhalen van de positie van de oude lezer en setten van de juiste volgnr. Daarna wordt de oude lezer vervangen in de lijst
             int positie = lezerLijst.indexOf(lez);
             Lezer oldLezer = lezerLijst.get(positie);
             newLez.setVolgnr(oldLezer.getVolgnr());
-            lezerLijst.remove(positie);
-            lezerLijst.add(positie, newLez);
+            lezerLijst.set(positie, newLez);
+
+            //vervangen van oude lezer in de ontleningslijst
             List<Ontlening> OntleningenVanLezer = this.getOntlening(lez);
-            for(Ontlening o : OntleningenVanLezer){
+            for (Ontlening o : OntleningenVanLezer) {
                 o.setLezer(newLez);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
-    
+
     /**
-     * Vind de auteurs van een boek, en geeft een array van Auteur objecten terug
+     * Vind de auteurs van een boek, en geeft een array van Auteur objecten
+     * terug
+     *
      * @param b
      * @return Auteur[]
      */
-    public Auteur[] vindAuteurs(Boek b){
-        try{
-            int lengte = ((Boek) publicaties.get(this.publicaties.indexOf((Publicatie)b))).getAuteurs().length;
+    public Auteur[] vindAuteurs(Boek b) {
+        try {
+            int lengte = ((Boek) publicatieLijst.get(this.publicatieLijst.indexOf((Publicatie) b))).getAuteurs().length;
             Auteur[] auteurs = new Auteur[lengte];
-            int[] auteursAlsInt = ((Boek) publicaties.get(this.publicaties.indexOf((Publicatie)b))).getAuteurs();
-            for(int i = 0; i<lengte;i++){
+            int[] auteursAlsInt = ((Boek) publicatieLijst.get(this.publicatieLijst.indexOf((Publicatie) b))).getAuteurs();
+            for (int i = 0; i < lengte; i++) {
                 auteurs[i] = this.getAuteurByVolgNr(auteursAlsInt[i]);
             }
             return auteurs;
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return null;
     }
-    
+
     /**
      * Print een overzicht van boeken met daarbij vermeld de auteurs
      */
-    public void printAuteursPerBoek(){
-        try{
-            for(Publicatie p : publicaties)
-                if(p.getClass().equals(Boek.class)){
+    public void printAuteursPerBoek() {
+        try {
+            for (Publicatie p : publicatieLijst) {
+                if (p.getClass().equals(Boek.class)) {
                     Boek b = (Boek) p;
-                    System.out.print("Titel: "+ b.getTitel() + " - Auteurs: " + this.getAuteurByVolgNr(b.getAuteurs()[0]).getNaam());
-                    for(int i = 1; i<b.getAuteurs().length;i++){
+                    System.out.print("Titel: " + b.getTitel() + " - Auteurs: " + this.getAuteurByVolgNr(b.getAuteurs()[0]).getNaam());
+                    for (int i = 1; i < b.getAuteurs().length; i++) {
                         System.out.print(" - " + this.getAuteurByVolgNr(b.getAuteurs()[i]).getNaam());
                     }
                     System.out.println("");
                 }
-        } catch(Exception e){
+            }
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    /**
+     * Vervangt een Auteur object met een nieuwe object, met dezelfde volgnr
+     *
+     * @param aut
+     * @param newAut
+     */
+    public void auteurBewerken(Auteur aut, Auteur newAut) {
+        try {
+            //achterhalen van de positie van de oude auteur en setten van de juiste volgnr. Daarna wordt de oude auteur vervangen in de lijst
+            int positie = auteurLijst.indexOf(aut);
+            Auteur oldAuteur = auteurLijst.get(positie);
+            newAut.setVolgnr(oldAuteur.getVolgnr());
+            auteurLijst.set(positie, newAut);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * methode om alle lijsten leeg te maken
+     */
+    public void clearDB() {
+        auteurLijst.clear();
+        ontleningLijst.clear();
+        publicatieLijst.clear();
+        lezerLijst.clear();
+        System.out.println("Database is nu leeg");
     }
 }
