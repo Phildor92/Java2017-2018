@@ -459,7 +459,7 @@ public class BibliotheekDatabank {
      * Print een lijst van namen van lezers die een publicatie uit hebben geleend waarvan de leentermijn verstreken is.
      */
     public void overzichtLezersMetPublicatiesOverdatum() {
-        Set<Lezer> lezerSet = new HashSet<Lezer>();
+        Set<Lezer> lezerSet = new HashSet<>();
         for (Ontlening o : ontleningsLijst) {
             if (o.getVervaldatum().compareTo(Calendar.getInstance()) < 0) {
                 lezerSet.add(o.getLezer());
