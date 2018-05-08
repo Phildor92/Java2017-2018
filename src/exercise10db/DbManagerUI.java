@@ -3,19 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package exercises3;
+package exercise10db;
+
+import org.hsqldb.util.DatabaseManager;
 
 /**
  *
  * @author Philip Evans
  */
-public class Exercises10 {
+public class DbManagerUI {
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        //  code application logic here
+        DatabaseManager.main(args);
     }
     
 }
