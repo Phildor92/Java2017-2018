@@ -7,16 +7,26 @@ package exercise11;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JFrame;
 
 /**
  *
  * @author Philip Evans
  */
 public class KnopListener implements ActionListener {
+    Parameters temp;
 
+    public KnopListener(Parameters pm){
+        temp = pm;
+    }
+    
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println(e);
+        if("OK".equals(e.getActionCommand())){
+            
+        } else if ("Cancel".equals(e.getActionCommand())){
+            
+        }
     }
     
 }

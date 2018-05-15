@@ -27,14 +27,28 @@ public class WindowApp {
         JPanel pn1 = new JPanel();
         pn1.setLayout(new BoxLayout(pn1, BoxLayout.X_AXIS));
         
-        JButton b1 = new JButton("OK");
+        KnopListener kl = new KnopListener(pm);
+        
+        JButton b1 = new JButton("OKAY");
+        b1.setActionCommand("OK");
         b1.setPreferredSize(new Dimension(30,10));
-        b1.addActionListener(new KnopListener());
+        b1.addActionListener(kl);
+        
+        JButton b2 = new JButton("Cancel!");
+        b2.setActionCommand("Cancel");
+        b2.setPreferredSize(new Dimension(30,10));
+        b2.addActionListener(kl);
+        
+        JPanel pn2 = new JPanel();
+        pn2.setLayout(new BoxLayout(pn2, BoxLayout.Y_AXIS));
+        
+        
         
         pn1.add(b1);
+        pn1.add(b2);
         pm.add(pn1);
-        
-        
+        pm.add(pn2);
+                
         
         
         pm.setSize(300,200);
