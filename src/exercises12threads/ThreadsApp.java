@@ -20,9 +20,9 @@ public class ThreadsApp {
         TextBanner tb2 = new TextBanner("Banana");
         TextBanner tb3 = new TextBanner("Orange");
         
-        tb1.start();
-        tb2.start();
-        tb3.start();
+        new Thread(tb1).start();
+        new Thread(tb2).start();
+        new Thread(tb3).start();
         
         Thread.sleep(100);
         

@@ -5,11 +5,13 @@
  */
 package exercises12threads;
 
+import javax.swing.JButton;
+
 /**
  *
  * @author Philip Evans
  */
-public class TextBanner extends Thread {
+public class TextBanner extends JButton implements Runnable {
     private String text;
     private boolean blnContinue = true;
     private int count = 0;
@@ -34,4 +36,6 @@ public class TextBanner extends Thread {
     public void stopThread(){
         blnContinue = false;
     }
+    
+    Thread t = new Thread();
 }
