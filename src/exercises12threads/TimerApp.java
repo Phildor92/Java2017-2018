@@ -25,5 +25,4 @@ public class TimerApp extends JFrame {
         timer.setVisible(true);
         tk.startTimer();
     }
-    
 }
